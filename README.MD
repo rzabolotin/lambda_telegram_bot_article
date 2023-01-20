@@ -21,17 +21,17 @@ pipenv install aiogram scikit-learn==0.24. numpy
 
 
 ## 3. Use a pretrained model
-As I said before, we will use a pretrained model from the 5th week of the course. You can find it in the GitHub repository of the course. Our model predicts the price of the car. You can find the model in the file `model_C=1.0.bin`.
-
+As I said before, we will use a pretrained model from the 5th week of the [ML Zoomcamp course](https://github.com/alexeygrigorev/mlbookcamp-code/tree/master/course-zoomcamp/05-deployment/code). You can find it in the GitHub repository of the course. Our model predicts the price of the car. You can find the model in the file `model_C=1.0.bin`.
+I aslo published this model in my [GitHub repository](https://github.com/rzabolotin/lambda_telegram_bot_article).
 
 ## 4. Create a bot
-Our bot will be very simple, we just want to get a data from user and predict probability of churn. As we do it the course with flask application. Yes, that it is not the best user experience, but it's just an example.  
+Our bot will be very simple, we just want to get a data from user in json format and return the probability of user's churn. As we do it the course with flask application. Yes, that it is not the best user experience, but it's just an example of deploying model in telegram.  
 It will be much better to ask user to answer questions one by one, give him/her options to choice and so on. But it's not the goal of this article. We can enhance our bot in the future. 
 The structure of the bot is the next:
 * import necessary parts (Bot, Dispatcher, executor)
 * create a bot and dispatcher
 * create handlers, in my case for /start command and for text messages
-* in the end we run the executor to start the bot and listen for messages
+* in the end we run the executor to start the bot and listen for messages (this part will be different when run the bot in AWS Lambda)
 
 ### 4.1. Import necessary parts and creating a bot object
 ```python
@@ -89,7 +89,7 @@ if __name__ == "__main__":
 
 In the end we run the executor to start the bot and listen for messages. We use `skip_updates=True` because we don't want to process old messages. 
 
-I skipped the function `predict` because it's the same as it was in the course. You can find it in the repo I mentioned below.
+I skipped the function `predict` because it's the same as it was in the course. You can find it in [my repo](https://github.com/rzabolotin/lambda_telegram_bot_article).
 
 ## 5. Prepare image for AWS Lambda
 So our simple bot is ready, we could run it locally and test it.  
@@ -133,14 +133,14 @@ dp = Dispatcher(bot)
 ```
 
 ### 5.2. Add a handler for webhook
-We need to add a handler for webhook. It is a function, that will be called when our lambda function is called. 
+We need to add a handler function, that will be triggered when our lambda  is called. 
 ```python 
 def lambda_handler(event, context):
     pass
     
 ```
 
-And in this function we need to push the event to the dispatcher. But as it is asynchronous function, we need to use `asyncio.run` to run it. Maybe it's a little bit confusing, but it's the way it works. 
+In this function we need to push the event to the dispatcher. But as it is asynchronous function, we need to use `asyncio` to run it. Maybe it's a little confusing, but it's the way it works. 
 ```python 
 async def handle_event(event):
     update = types.Update.to_object(event)
@@ -148,7 +148,6 @@ async def handle_event(event):
     await dp.process_update(update)
 
     return 'OK'
-
 
 def lambda_handler(event, context):
     logger.info("Received event: " + str(event))
@@ -182,24 +181,19 @@ But I want to mention, that you need to create API Gateway for your lambda funct
 ## 7. Set webhook
 We can set webhook for our bot using following url:
 ```
-https://api.telegram.org/bot<url>/setWebhook?url=<url>
+https://api.telegram.org/bot<token>/setWebhook?url=<url>
 ```
 Where `<token>` is your bot token, and `<url>` is the url of your lambda function.
 
+## 8. Test bot
+Добавить видео как бот работает в лямбде.
 
+## 9. Conclusion
+In this article, I showed you another way how to make user interface for your machine learning model.  
+You can interact with user, get text, pictures, and even voice messages.  
+Also we run our bot on AWS Lambda, and it's very cheap. You don't need to have a full-time server to run your bot.
 
-
-
-
-
- 
-
-link_to_repo
-resources: 
-course ML Zoomcamp
-
-
-
-Additionally, I want to share [this repository](https://github.com/DavisDmitry/aiogram-aws-serverless-example), where I got a lot of useful information about deploying telegram bot to AWS Lambda.
-https://github.com/DavisDmitry/aiogram-aws-serverless-example
-https://github.com/alexeygrigorev/mlbookcamp-code/blob/master/course-zoomcamp/05-deployment/code/Dockerfile
+## 10. Links
+- [repo with code](https://github.com/rzabolotin/lambda_telegram_bot_article)
+- [ML zoomcamp course](https://github.com/alexeygrigorev/mlbookcamp-code/tree/master/course-zoomcamp)
+- [Great example by Davis Dmitry, that gives me a lot of inspiration](https://github.com/DavisDmitry/aiogram-aws-serverless-example)
