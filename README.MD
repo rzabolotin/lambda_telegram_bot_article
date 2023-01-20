@@ -1,4 +1,4 @@
-# Deploying model via telegram bot
+# Deploying ML model via telegram bot
 
 Hi, folks. In this article I want to give you another example of how to deploy your model via telegram bot.  
 In this case, I will use the same model that we used in [ML Zoomcamp](https://github.com/alexeygrigorev/mlbookcamp-code/tree/master/course-zoomcamp) course in the 5th week. If you didn't take part in this course, I very recommend you to do it, it's really cool.  
