@@ -108,8 +108,12 @@ After you can send /start command, and then send it date in the correct format.
 
 ## 5. Deploy bot to AWS Lambda
 
-Тут написать про веб-хуки и пулинг, и как будет работать код в лямбде.  
-Может даже нарисовать схему.
+Well, we created a simple bot, but it has one drawback (actually not one). To be able to answer messages, our bot should be always running.    
+This technology is called polling. It means that our bot will be always asking telegram api if he has new messages, and if he has, bot will handle them.  
+It's not very convenient, because we need our bot server to be running everytime.
+Another way to deal with this problem is to use webhooks. It means that we will send messages to telegram. The telegram server will send them to our bot to handle.  
+It's much better, because we don't need to have constantly running server for handle messages. But we need to have public url for our bot, where telegram-server could send messages.  
+And this is where AWS Lambda comes in. We pay only for the time our bot is running. And we cah create a public url for our lambda function using AWS API Gateway.
 
 To deploy telegram bot on AWS Lambda we need to make some changes in our code.
 
@@ -177,6 +181,20 @@ Now we need to create a lambda function. Also, we need to create ECR repository 
 This process is described in the course. I will not repeat it here.  
 But I want to mention, that you need to create API Gateway for your lambda function, for POST requests.  
 
+Here some screenshots of my AWS Lambda configuration.
+
+### Lambda function
+![lambda_function](/images/aws_lambda.png)
+
+### Gateway
+![lambda_function](/images/aws_gateway.png)
+
+### ECR
+![lambda_function](/images/aws_ecr.png)
+
+### CloudWatch
+![lambda_function](/images/aws_cloudwatch.png)
+
 
 ## 7. Set webhook
 We can set webhook for our bot using following url:
@@ -186,7 +204,7 @@ https://api.telegram.org/bot<token>/setWebhook?url=<url>
 Where `<token>` is your bot token, and `<url>` is the url of your lambda function.
 
 ## 8. Test bot
-Добавить видео как бот работает в лямбде.
+![bot_screenshot_1](/images/bot_example.gif)
 
 ## 9. Conclusion
 In this article, I showed you another way how to make user interface for your machine learning model.  
